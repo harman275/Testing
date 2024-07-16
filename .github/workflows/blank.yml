@@ -24,24 +24,22 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
-    - name: Generate private key
-      run: openssl genpkey -algorithm RSA -out private.key -aes256 -pass pass:yourpassphrase
+    - name: Generate private key and certificate
+      run: |
+        openssl req -newkey rsa:2048 -nodes -keyout private.key -x509 -days 365 -out code_signing.crt -subj "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=yourdomain.com"
 
-    - name: Generate CSR
-      run: openssl req -new -key private.key -out code_signing.csr -passin pass:yourpassphrase -subj "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=yourdomain.com"
+    - name: Create PKCS#12 keystore
+      run: openssl pkcs12 -export -in code_signing.crt -inkey private.key -out code_signing.p12 -name code_signing -passout pass:yourpassphrase
 
-    - name: Generate self-signed certificate
-      run: openssl x509 -req -in code_signing.csr -signkey private.key -out code_signing.crt -days 365 -passin pass:yourpassphrase
-
-    - name: Convert certificate to PKCS#12 format
-      run: openssl pkcs12 -export -out code_signing.p12 -inkey private.key -in code_signing.crt -passin pass:yourpassphrase -passout pass:yourpassphrase
+    - name: Import PKCS#12 into Java keystore
+      run: |
+        keytool -importkeystore -deststorepass yourpassphrase -destkeypass yourpassphrase -destkeystore code_signing.jks -srckeystore code_signing.p12 -srcstoretype PKCS12 -srcstorepass yourpassphrase -alias code_signing
 
     - name: Sign JAR file
-      run: |
-        jarsigner -keystore code_signing.p12 -storepass yourpassphrase -storetype PKCS12 target/SampleJavaApp-1.0-SNAPSHOT.jar alias_name
+      run: jarsigner -keystore code_signing.jks -storepass yourpassphrase -keypass yourpassphrase -signedjar target/SampleJavaApp-1.0-SNAPSHOT-signed.jar target/SampleJavaApp-1.0-SNAPSHOT.jar code_signing
 
-    - name: Upload JAR file
+    - name: Upload signed JAR file
       uses: actions/upload-artifact@v3
       with:
-        name: SampleJavaApp
-        path: target/SampleJavaApp-1.0-SNAPSHOT.jar
+        name: SampleJavaApp-signed
+        path: target/SampleJavaApp-1.0-SNAPSHOT-signed.jar
