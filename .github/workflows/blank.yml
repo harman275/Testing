@@ -24,9 +24,24 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
+    - name: Generate private key
+      run: openssl genpkey -algorithm RSA -out private.key -aes256 -pass pass:yourpassphrase
+
+    - name: Generate CSR
+      run: openssl req -new -key private.key -out code_signing.csr -passin pass:yourpassphrase -subj "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=yourdomain.com"
+
+    - name: Generate self-signed certificate
+      run: openssl x509 -req -in code_signing.csr -signkey private.key -out code_signing.crt -days 365 -passin pass:yourpassphrase
+
+    - name: Convert certificate to PKCS#12 format
+      run: openssl pkcs12 -export -out code_signing.p12 -inkey private.key -in code_signing.crt -passin pass:yourpassphrase -passout pass:yourpassphrase
+
+    - name: Sign JAR file
+      run: |
+        jarsigner -keystore code_signing.p12 -storepass yourpassphrase -storetype PKCS12 target/SampleJavaApp-1.0-SNAPSHOT.jar alias_name
+
     - name: Upload JAR file
       uses: actions/upload-artifact@v3
       with:
         name: SampleJavaApp
         path: target/SampleJavaApp-1.0-SNAPSHOT.jar
-
