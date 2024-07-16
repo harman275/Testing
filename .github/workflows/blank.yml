@@ -24,9 +24,16 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
-    - name: Generate self-signed certificate and keystore
+    - name: Generate private key and self-signed certificate
       run: |
-        keytool -genkeypair -alias code_signing -keyalg RSA -keysize 2048 -validity 365 -dname "CN=yourdomain.com, OU=Unit, O=Organization, L=City, ST=State, C=US" -keypass yourpassphrase -keystore code_signing.jks -storepass yourpassphrase
+        openssl req -newkey rsa:2048 -nodes -keyout private.key -x509 -days 365 -out code_signing.crt -subj "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=yourdomain.com"
+
+    - name: Create PKCS#12 keystore
+      run: openssl pkcs12 -export -in code_signing.crt -inkey private.key -out code_signing.p12 -name code_signing -passout pass:yourpassphrase
+
+    - name: Convert PKCS#12 to Java Keystore
+      run: |
+        keytool -importkeystore -deststorepass yourpassphrase -destkeypass yourpassphrase -destkeystore code_signing.jks -srckeystore code_signing.p12 -srcstoretype PKCS12 -srcstorepass yourpassphrase -alias code_signing
 
     - name: Sign JAR file
       run: jarsigner -keystore code_signing.jks -storepass yourpassphrase -keypass yourpassphrase -signedjar target/SampleJavaApp-1.0-SNAPSHOT-signed.jar target/SampleJavaApp-1.0-SNAPSHOT.jar code_signing
