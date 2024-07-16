@@ -35,6 +35,10 @@ jobs:
       run: |
         keytool -importkeystore -deststorepass yourpassphrase -destkeypass yourpassphrase -destkeystore code_signing.jks -srckeystore code_signing.p12 -srcstoretype PKCS12 -srcstorepass yourpassphrase -alias code_signing
 
+    - name: Add self-signed certificate to Java cacerts
+      run: |
+        sudo keytool -import -alias code_signing -file code_signing.crt -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -noprompt
+
     - name: Sign JAR file
       run: jarsigner -keystore code_signing.jks -storepass yourpassphrase -keypass yourpassphrase -signedjar target/SampleJavaApp-1.0-SNAPSHOT-signed.jar target/SampleJavaApp-1.0-SNAPSHOT.jar code_signing
 
