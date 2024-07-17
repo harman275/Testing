@@ -15,10 +15,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up JDK 1.8
+    - name: Set up JDK 14
       uses: actions/setup-java@v3
       with:
-        java-version: '8'
+        java-version: '14'
         distribution: 'adopt'
 
     - name: Build with Maven
@@ -47,14 +47,14 @@ jobs:
     - name: Verify JAR file signature
       run: jarsigner -verify -verbose -certs target/SampleJavaApp-1.0-SNAPSHOT-signed.jar
 
-    - name: Download and install Launch4j
+    - name: Create EXE using jpackage
       run: |
-        wget https://sourceforge.net/projects/launch4j/files/launch4j-3/3.50/launch4j-3.50-linux.tar.gz
-        tar -xzf launch4j-3.50-linux.tar.gz
-
-    - name: Convert JAR to EXE using Launch4j
-      run: |
-        ./launch4j/launch4j launch4j-config.xml
+        jpackage \
+          --type exe \
+          --input target \
+          --name SampleJavaApp \
+          --main-jar SampleJavaApp-1.0-SNAPSHOT-signed.jar \
+          --main-class com.yourpackage.MainClass
 
     - name: Upload signed JAR file
       uses: actions/upload-artifact@v3
@@ -66,4 +66,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: SampleJavaApp-EXE
-        path: path/to/generated/exe/SampleJavaApp.exe
+        path: SampleJavaApp.exe
