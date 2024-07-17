@@ -41,13 +41,14 @@ jobs:
         echo "cacerts path: $CACERTS_PATH"
         sudo keytool -import -alias code_signing -file code_signing.crt -keystore $CACERTS_PATH -storepass changeit -noprompt
 
-
+    - name: Sign JAR file
+      run: jarsigner -keystore code_signing.jks -storepass yourpassphrase -keypass yourpassphrase -signedjar target/SampleJavaApp-1.0-SNAPSHOT-signed.jar target/SampleJavaApp-1.0-SNAPSHOT.jar code_signing
 
     - name: Verify JAR file signature
-      run: jarsigner -verify -verbose -certs target/SampleJavaApp-1.0-SNAPSHOT.jar
+      run: jarsigner -verify -verbose -certs target/SampleJavaApp-1.0-SNAPSHOT-signed.jar
 
     - name: Upload signed JAR file
       uses: actions/upload-artifact@v3
       with:
         name: SampleJavaApp-signed
-        path: target/SampleJavaApp-1.0-SNAPSHOT.jar
+        path: target/SampleJavaApp-1.0-SNAPSHOT-signed.jar
