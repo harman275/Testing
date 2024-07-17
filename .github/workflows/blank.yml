@@ -47,23 +47,8 @@ jobs:
     - name: Verify JAR file signature
       run: jarsigner -verify -verbose -certs target/SampleJavaApp-1.0-SNAPSHOT-signed.jar
 
-    - name: Create EXE using jpackage
-      run: |
-        jpackage \
-          --type exe \
-          --input target \
-          --name SampleJavaApp \
-          --main-jar SampleJavaApp-1.0-SNAPSHOT-signed.jar \
-          --main-class com.yourpackage.MainClass
-
     - name: Upload signed JAR file
       uses: actions/upload-artifact@v3
       with:
         name: SampleJavaApp-signed
         path: target/SampleJavaApp-1.0-SNAPSHOT-signed.jar
-
-    - name: Upload EXE file
-      uses: actions/upload-artifact@v3
-      with:
-        name: SampleJavaApp-EXE
-        path: SampleJavaApp.exe
