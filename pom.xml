@@ -63,28 +63,28 @@
       </plugin>
       
       <!-- Launch4j Plugin -->
-      <plugin>
-        <groupId>com.akathist.maven.plugins.launch4j</groupId>
-        <artifactId>launch4j-maven-plugin</artifactId>
-        <version>1.7.26</version>
-        <executions>
-          <execution>
-            <id>launch4j</id>
-            <phase>package</phase>
-            <goals>
-              <goal>launch4j</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <outfile>target/SampleJavaApp.exe</outfile>
-          <jar>target/SampleJavaApp-1.0-SNAPSHOT-jar-with-dependencies.jar</jar>
-          <dontWrapJar>false</dontWrapJar>
-          <headerType>gui</headerType>
-          <mainClass>com.example.App</mainClass>
-          <bundleJre>false</bundleJre>
-        </configuration>
-      </plugin>
+<plugin>
+  <groupId>com.akathist.maven.plugins.launch4j</groupId>
+  <artifactId>launch4j-maven-plugin</artifactId>
+  <version>1.7.25</version> <!-- Use a version that is available -->
+  <executions>
+    <execution>
+      <id>launch4j</id>
+      <phase>package</phase>
+      <goals>
+        <goal>launch4j</goal>
+      </goals>
+    </execution>
+  </executions>
+  <configuration>
+    <outfile>target/SampleJavaApp.exe</outfile>
+    <jar>target/SampleJavaApp-1.0-SNAPSHOT-jar-with-dependencies.jar</jar>
+    <dontWrapJar>false</dontWrapJar>
+    <headerType>gui</headerType>
+    <mainClass>com.example.App</mainClass>
+    <bundleJre>false</bundleJre>
+  </configuration>
+</plugin>
     </plugins>
   </build>
 </project>
