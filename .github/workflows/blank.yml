@@ -47,8 +47,23 @@ jobs:
     - name: Verify JAR file signature
       run: jarsigner -verify -verbose -certs target/SampleJavaApp-1.0-SNAPSHOT-signed.jar
 
+    - name: Install Launch4j
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y launch4j
+
+    - name: Convert JAR to EXE using Launch4j
+      run: |
+        launch4j launch4j-config.xml
+
     - name: Upload signed JAR file
       uses: actions/upload-artifact@v3
       with:
         name: SampleJavaApp-signed
         path: target/SampleJavaApp-1.0-SNAPSHOT-signed.jar
+
+    - name: Upload EXE file
+      uses: actions/upload-artifact@v3
+      with:
+        name: SampleJavaApp-EXE
+        path: path/to/generated/exe/SampleJavaApp.exe
