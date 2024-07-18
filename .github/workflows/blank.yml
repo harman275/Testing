@@ -47,8 +47,21 @@ jobs:
     - name: Verify JAR file signature
       run: jarsigner -verify -verbose -certs target/SampleJavaApp-1.0-SNAPSHOT-signed.jar
 
-    - name: Upload signed JAR file
+    - name: Extract exe4j
+      run: |
+        tar -xzvf tools/exe4j-8.0.tar.gz -C $HOME
+
+    - name: Convert JAR to EXE using exe4j
+      run: |
+        $HOME/exe4j-8.0/bin/exe4j \
+          --executable target/SampleJavaApp.exe \
+          --jar target/SampleJavaApp-1.0-SNAPSHOT-signed.jar \
+          --mainClass your.main.ClassName \
+          --vmType 1.8 \
+          --vmArgs "-Xmx1024m"
+
+    - name: Upload EXE file
       uses: actions/upload-artifact@v3
       with:
-        name: SampleJavaApp-signed
-        path: target/SampleJavaApp-1.0-SNAPSHOT-signed.jar
+        name: SampleJavaApp-exe
+        path: target/SampleJavaApp.exe
