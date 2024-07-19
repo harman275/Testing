@@ -53,6 +53,9 @@ jobs:
           file exe4j.tar.gz
           tar -xzf exe4j.tar.gz
 
+    - name: Verify exe4j extraction
+      run: ls -l ./exe4j9/bin
+
     - name: Create EXE using exe4j
       run: |
           ./exe4j9/bin/exe4j \
@@ -61,6 +64,9 @@ jobs:
             --define outputDir="target" \
             --define mainClass="com.mycompany.myapp.Main"
 
+    - name: Verify EXE creation
+      run: ls -l target
+  
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
