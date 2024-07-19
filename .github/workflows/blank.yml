@@ -56,22 +56,14 @@ jobs:
     - name: Verify exe4j extraction
       run: ls -l ./exe4j9/bin
 
-    - name: Install Xvfb
-      run: sudo apt-get install -y xvfb
 
     - name: Create EXE using exe4j
       run: |
-          Xvfb :99 &  # Start Xvfb
-          export DISPLAY=:99  # Set DISPLAY variable
-          ./exe4j9/bin/exe4j --define applicationName="MyApp" --define applicationJar="target/SampleJavaApp-1.0-SNAPSHOT-signed.jar" --define outputDir="target" --define mainClass="com.mycompany.myapp.Main" || true
-          echo "exe4j9 command executed with exit code $?"
-          cat ./exe4j9/logs/exe4j.log || true
-      shell: bash
-          # ./exe4j9/bin/exe4j \
-          #   --define applicationName="MyApp" \
-          #   --define applicationJar="target/SampleJavaApp-1.0-SNAPSHOT-signed.jar" \
-          #   --define outputDir="target" \
-          #   --define mainClass="com.mycompany.myapp.Main"
+          ./exe4j9/bin/exe4j \
+            --define applicationName="MyApp" \
+            --define applicationJar="target/SampleJavaApp-1.0-SNAPSHOT-signed.jar" \
+            --define outputDir="target" \
+            --define mainClass="com.mycompany.myapp.Main"
 
     - name: Verify EXE creation
       run: ls -l target
