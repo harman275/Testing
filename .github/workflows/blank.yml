@@ -58,9 +58,9 @@ jobs:
 
     - name: Create EXE using exe4j
       run: |
-          ./exe4j/bin/exe4j --define applicationName="MyApp" --define applicationJar="target/SampleJavaApp-1.0-SNAPSHOT-signed.jar" --define outputDir="target" --define mainClass="com.mycompany.myapp.Main" || true
-          echo "exe4j command executed with exit code $?"
-          cat ./exe4j/logs/exe4j.log || true
+          ./exe4j9/bin/exe4j --define applicationName="MyApp" --define applicationJar="target/SampleJavaApp-1.0-SNAPSHOT-signed.jar" --define outputDir="target" --define mainClass="com.mycompany.myapp.Main" || true
+          echo "exe4j9 command executed with exit code $?"
+          cat ./exe4j9/logs/exe4j.log || true
       shell: bash
           # ./exe4j9/bin/exe4j \
           #   --define applicationName="MyApp" \
