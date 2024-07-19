@@ -47,8 +47,22 @@ jobs:
     - name: Verify JAR file signature
       run: jarsigner -verify -verbose -certs target/SampleJavaApp-1.0-SNAPSHOT-signed.jar
 
-    - name: Upload signed JAR file
+    - name: Download exe4j
+      run: |
+          wget --output-document=exe4j.tar.gz https://download.ej-technologies.com/exe4j/exe4j_unix_9_0.tar.gz
+          file exe4j.tar.gz
+          tar -xzf exe4j.tar.gz
+
+    - name: Create EXE using exe4j
+      run: |
+          ./exe4j9/bin/exe4j \
+            --define applicationName="MyApp" \
+            --define applicationJar="target/SampleJavaApp-1.0-SNAPSHOT-signed.jar" \
+            --define outputDir="target" \
+            --define mainClass="com.mycompany.myapp.Main"
+
+    - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: SampleJavaApp-signed
-        path: target/SampleJavaApp-1.0-SNAPSHOT-signed.jar
+        name: myapp-exe
+        path: target/SampleJavaApp-1.0-SNAPSHOT-signed.exe
